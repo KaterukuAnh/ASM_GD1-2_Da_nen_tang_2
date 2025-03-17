@@ -42,7 +42,17 @@ const Login = ({ navigation }: any) => {
                 <CustomTextInput placeholder="Nhập email hoặc số điện thoại" />
                 <CustomTextInput placeholder="Mật khẩu" secureTextEntry hasToggle />
 
-                <CustomButton title="Đăng nhập" onPress={() => console.log("Login Pressed")} />
+                <View style={styles.cb}>
+                    <TouchableOpacity style={styles.cb_2}>
+                        <Image
+                            source={require("../assets/images/ri_checkbox-circle-line (1).png")}
+                        />
+                        <Text>Nhớ mật khẩu</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.registerLink}>Quên mật khẩu</Text>
+                </View>
+
+                <CustomButton title="Đăng nhập"/>
 
                 <View style={styles.dividerContainer}>
                     <LinearGradient
@@ -74,7 +84,7 @@ const Login = ({ navigation }: any) => {
 
                 <Text style={styles.registerText}>
                     Bạn không có tài khoản?{" "}
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Register")}>
                         <Text style={styles.registerLink}>Tạo tài khoản</Text>
                     </TouchableOpacity>
                 </Text>
@@ -101,8 +111,11 @@ const styles = StyleSheet.create({
     },
     imgbgr: {
         width: "100%",
-        height: "100%",
-        resizeMode: "cover",
+        height: "120%",
+        resizeMode: "contain",
+        position: "absolute",
+        bottom: 0,
+        left: 0
     },
     nutBack: {
         backgroundColor: "#F8EEC0",
@@ -128,6 +141,18 @@ const styles = StyleSheet.create({
         color: "black",
         fontWeight: "500",
         marginBottom: 20,
+    },
+    cb: {
+        flexDirection: "row",
+        justifyContent: "center",
+        gap: 115,
+        marginVertical: 5,
+        marginBottom: 20
+    },
+    cb_2: {
+        flexDirection: "row",
+        justifyContent: "center",
+        gap: 5
     },
     dividerContainer: {
         flexDirection: "row",
@@ -170,7 +195,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     registerLink: {
-        color: "#1DB954",
+        color: "#009245",
         fontWeight: "300",
     },
 });
