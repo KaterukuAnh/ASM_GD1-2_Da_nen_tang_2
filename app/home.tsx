@@ -38,12 +38,13 @@ const Home = () => {
                     </TouchableOpacity>
                 </View>
 
+                <Text>Cây trồng</Text>
+                
+
                 
             </View>
         </SafeAreaView>
-
     )
-
 }
 
 const styles = StyleSheet.create({
