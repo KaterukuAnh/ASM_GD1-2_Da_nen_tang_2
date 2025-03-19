@@ -111,11 +111,6 @@ function Index() {
         component={TabNavigation}
         options={{ headerShown: false }}
       />
-      {/* <Stack.Screen
-        name="Home"
-        component={Home}
-        options={{ headerShown: false }}
-      /> */}
       <Stack.Screen
         name="Login"
         component={Login}
