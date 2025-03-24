@@ -8,6 +8,7 @@ import Home from "./home";
 import Search from "./search";
 import Notification from "./notification";
 import Profile from "./profile";
+import Detail from "./detail";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -105,12 +106,7 @@ function TabNavigation() {
 
 function Index() {
   return (
-    <Stack.Navigator >
-      <Stack.Screen
-        name="HomeTabs"
-        component={TabNavigation}
-        options={{ headerShown: false }}
-      />
+    <Stack.Navigator>
       <Stack.Screen
         name="Login"
         component={Login}
@@ -119,6 +115,16 @@ function Index() {
       <Stack.Screen
         name="Register"
         component={Register}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="HomeTabs"
+        component={TabNavigation}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Detail"
+        component={Detail}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
@@ -139,7 +145,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   emptyLabel: {
-    fontSize: 0, // Ẩn chữ
+    fontSize: 1, // Ẩn chữ
   },
 });
 

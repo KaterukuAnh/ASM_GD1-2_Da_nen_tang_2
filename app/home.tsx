@@ -21,31 +21,7 @@ interface ProductItem {
     imageUrl: string;
 }
 
-const product1 = [
-    {
-        id: "1",
-        name: "Phi vô tri",
-        price: 20000000,
-        attribute: "Hàng limited",
-        imageUrl: "https://i.pinimg.com/originals/8a/f0/cf/8af0cf849d3afb612af209cd794cb3c2.jpg"
-    },
-    {
-        id: "2",
-        name: "Hoàng khùng",
-        price: 20000000,
-        attribute: "Hàng limited",
-        imageUrl: "https://i.pinimg.com/originals/8a/f0/cf/8af0cf849d3afb612af209cd794cb3c2.jpg"
-    },
-    {
-        id: "3",
-        name: "Lâm khùng",
-        price: 20000000,
-        attribute: "Hàng limited",
-        imageUrl: "https://i.pinimg.com/originals/8a/f0/cf/8af0cf849d3afb612af209cd794cb3c2.jpg"
-    },
-];
-
-const Home = (): any => {
+const Home = ({navigation}: any) => {
 
     const [products, setProducts] = useState<ProductItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -127,11 +103,12 @@ const Home = (): any => {
                                 data={visibleProducts}
                                 renderItem={({ item }) => (
                                     <ProductComponent
-                                        id={item._id}
+                                        _id={item._id}
                                         imageUrl={item.imageUrl}
                                         name={item.name}
                                         attribute={item.attribute}
                                         price={item.price}
+                                        onPress={() => navigation.navigate("Detail", { _id: item._id })}
                                     />
                                 )}
                                 numColumns={2}
@@ -220,7 +197,6 @@ const styles = StyleSheet.create({
     },
     containerPd: {
         marginHorizontal: 10,
-        // height: 1300,
     },
     seeMoreText: {
         textAlign: "right",

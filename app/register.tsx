@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -15,8 +15,33 @@ import { LinearGradient } from "expo-linear-gradient";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import CustomTextInput from "@/component/textInputL_R";
 import CustomButton from "@/component/buttonL_R";
+import taoAxiosInstance from "@/api/sever";
 
-const Register = () => {
+const Register = ({ navigation }: any) => {
+    const axiosInstance = taoAxiosInstance();
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+
+    const handleRegister = async () => {
+        try {
+            const response = await axiosInstance.post("/users/register", {
+                name,
+                email,
+                phone,
+                password
+            });
+
+            console.log("Đăng ký thành công:", response);
+            navigation.navigate("Login");
+        } catch (error: any) {
+            setError(error.message || "Đăng ký thất bại. Vui lòng thử lại!");
+        }
+    };
+
     return (
         <SafeAreaView style={styles.safeContainer}>
             <KeyboardAwareScrollView
@@ -34,16 +59,18 @@ const Register = () => {
                 <Text style={styles.welcomeText}>Đăng ký</Text>
                 <Text style={styles.subtitle}>Tạo tài khoản</Text>
 
-                <CustomTextInput placeholder="Họ tên" />
-                <CustomTextInput placeholder="E-mail" />
-                <CustomTextInput placeholder="Số điện thoại" />
-                <CustomTextInput placeholder="Mật khẩu" secureTextEntry hasToggle />
+                <CustomTextInput placeholder="Họ tên" value={name} onChangeText={setName} />
+                <CustomTextInput placeholder="E-mail" value={email} onChangeText={setEmail} />
+                <CustomTextInput placeholder="Số điện thoại" value={phone} onChangeText={setPhone} />
+                <CustomTextInput placeholder="Mật khẩu" secureTextEntry value={password} onChangeText={setPassword} />
+
+                {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
                 <View>
                     <Text style={styles.reviewText}>Để đăng ký tài khoản, bạn đồng ý <Text style={styles.reviewColor}>Terms & Conditions</Text> and <Text style={styles.reviewColor}>Privacy Policy</Text></Text>
                 </View>
 
-                <CustomButton title="Đăng ký" onPress={() => console.log("Login Pressed")} />
+                <CustomButton title="Đăng ký" onPress={handleRegister} />
 
                 <View style={styles.dividerContainer}>
                     <LinearGradient
@@ -181,6 +208,10 @@ const styles = StyleSheet.create({
     registerLink: {
         color: "#1DB954",
         fontWeight: "300",
+    },
+    errorText: { 
+        color: "red",
+        marginBottom: 10 
     },
 })
 

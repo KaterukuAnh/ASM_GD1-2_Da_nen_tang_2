@@ -7,16 +7,22 @@ import {
     Image,
     SafeAreaView,
 } from "react-native";
-const SearchComponent = ({title} : any) => {
-    return(
+const SearchComponent = ({ title }: any) => {
+    return (
         <View style={styles.container}>
-            <Image
-                source={require("../assets/images/clock.png")}
-            />
-            <Text>{title}</Text>
-            <Image
-                source={require("../assets/images/quit.png")}
-            />
+            <View style={styles.imgI}>
+                <Image
+                    source={require("../assets/images/clock.png")}
+                />
+            </View>
+            <View style={styles.txtT}>
+                <Text style={{fontSize: 16, fontWeight: "600"}}>{title}</Text>
+            </View>
+            <View style={styles.imgX}>
+                <Image
+                    source={require("../assets/images/quit.png")}
+                />
+            </View>
         </View>
 
     )
@@ -26,7 +32,19 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
         paddingHorizontal: 80,
+        alignItems: "center",
         justifyContent: "space-between"
+    },
+    txtT: {
+        width: "40%",
+    },
+    imgI: {
+        width: 0
+    },
+    imgX: {
+        width: "30%",
+        alignItems: "flex-end"
+
     }
 })
 

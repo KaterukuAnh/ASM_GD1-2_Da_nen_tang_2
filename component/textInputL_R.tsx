@@ -1,25 +1,54 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from "react-native";
+import { StyleSheet, TextInput, View, TouchableOpacity, Image } from "react-native";
 
 interface CustomTextInputProps {
     placeholder: string;
-    secureTextEntry?: boolean;
-    hasToggle?: boolean;
+    value?: string;
+    secureTextEntry?: boolean; // Có phải ô mật khẩu không?
+    hasToggle?: boolean; // Có icon ẩn/hiện mật khẩu không?
+    isSearch?: boolean; // Có phải ô tìm kiếm không?
+    onChangeText?: (text: string) => void;
+    onSubmitEditing?: () => void;
 }
 
-const CustomTextInput: React.FC<CustomTextInputProps> = ({ placeholder, secureTextEntry = false, hasToggle = false }) => {
-    const [isPasswordVisible, setPasswordVisible] = useState(false)
+const CustomTextInput: React.FC<CustomTextInputProps> = ({
+    placeholder,
+    value,
+    secureTextEntry = false,
+    hasToggle = false,
+    isSearch = false,
+    onChangeText,
+    onSubmitEditing
+}) => {
+    const [isPasswordVisible, setPasswordVisible] = useState(false);
+    const [text, setText] = useState("");
+
+    const handleTextChange = (value: string) => {
+        setText(value);
+        onChangeText?.(value); // Gửi dữ liệu ra ngoài nếu có truyền hàm
+    };
 
     return (
         <View style={styles.inputContainer}>
+            {/* Icon tìm kiếm nếu là ô tìm kiếm */}
+            {isSearch && (
+                <Image source={require("../assets/images/search.png")} style={styles.icon} />
+            )}
+
+            {/* Ô nhập liệu */}
             <TextInput
                 style={styles.input}
                 placeholder={placeholder}
                 placeholderTextColor="#8B8B8B"
                 secureTextEntry={secureTextEntry && !isPasswordVisible}
+                value={value}
+                onChangeText={handleTextChange}
+                onSubmitEditing={onSubmitEditing} 
             />
+
+            {/* Icon ẩn/hiện mật khẩu nếu là ô mật khẩu */}
             {secureTextEntry && hasToggle && (
-                <TouchableOpacity onPress={() => setPasswordVisible(!isPasswordVisible)} style={styles.iconContainer}>
+                <TouchableOpacity onPress={() => setPasswordVisible(!isPasswordVisible)}>
                     <Image
                         source={
                             isPasswordVisible
@@ -41,25 +70,23 @@ const styles = StyleSheet.create({
         width: "90%",
         backgroundColor: "#fff",
         borderRadius: 10,
-        borderWidth: 2,
-        borderColor: "#8B8B8B",
-        paddingHorizontal: 20,
+        paddingHorizontal: 15,
         height: 50,
         marginBottom: 15,
+        borderWidth: 1,
+        borderColor: "#ccc",
     },
     input: {
         flex: 1,
         fontSize: 16,
         color: "#000",
     },
-    iconContainer: {
-        padding: 5,
-    },
     icon: {
-        width: 24,
-        height: 24,
+        width: 20,
+        height: 20,
+        marginHorizontal: 10,
+        tintColor: "#8B8B8B",
     },
-
 });
 
 export default CustomTextInput;

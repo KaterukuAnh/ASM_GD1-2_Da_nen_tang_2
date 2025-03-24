@@ -4,61 +4,67 @@ import {
     Text,
     View,
     Image,
+    TouchableOpacity
 } from "react-native";
 
 interface ProductItem {
-    id: string;
+    _id: string;
     name: string;
     price: number;
     attribute: string;
     imageUrl: string;
+    onPress: () => void;
 }
 
-const ProductComponent: React.FC<ProductItem> = ({ id, name, attribute, price, imageUrl }) => {
+const ProductComponent: React.FC<ProductItem> = ({ _id, name, attribute, price, imageUrl, onPress }) => {
     return (
-        <View style={styles.container}>
-            <Image
-                source={{ uri: imageUrl }}
-                style={styles.productImage}
-                resizeMode="cover"
-            />
-            <View style={styles.infoContainer}>
-                <Text style={styles.productName} numberOfLines={1}>{name}</Text>
-                <Text style={styles.attribute}>{attribute}</Text>
-                <Text style={styles.price}>{price.toLocaleString()}đ</Text>
+        <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={{width: "100%"}}>
+            <View style={styles.container}>
+                <Image
+                    source={{ uri: imageUrl }}
+                    style={styles.productImage}
+                    resizeMode="cover"
+                />
+                <View style={styles.infoContainer}>
+                    <Text style={styles.productName} numberOfLines={1}>{name}</Text>
+                    <Text style={styles.attribute}>{attribute}</Text>
+                    <Text style={styles.price}>{price.toLocaleString()}đ</Text>
+                </View>
             </View>
-        </View>
+
+        </TouchableOpacity>
+
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginHorizontal: 5,
-        backgroundColor: "#FFFFFF",
+        marginHorizontal: 10,
+        backgroundColor: "#fff",
         marginBottom: 10,
-        borderRadius: 8,
+        borderRadius: 10,
         overflow: "hidden"
     },
     productImage: {
         width: "100%",
-        height: 200,
+        height: 150,
+        resizeMode: "contain"
     },
     infoContainer: {
-        padding: 8,
-        gap: 4
+        gap: 2
     },
     productName: {
-        fontWeight: "600", 
-        fontSize: 16, 
+        fontWeight: "600",
+        fontSize: 16,
         width: "100%"
     },
     attribute: {
-        color: "#7D7B7B", 
+        color: "#7D7B7B",
         fontSize: 14
     },
     price: {
-        color: "#007537", 
+        color: "#007537",
         fontSize: 16
     }
 });

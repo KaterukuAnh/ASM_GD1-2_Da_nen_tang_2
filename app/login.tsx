@@ -8,12 +8,33 @@ import {
     SafeAreaView,
     Platform,
 } from "react-native";
+import taoAxiosInstance from "@/api/sever";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import CustomTextInput from "@/component/textInputL_R";
 import CustomButton from "@/component/buttonL_R";
 import { LinearGradient } from "expo-linear-gradient";
 
 const Login = ({ navigation }: any) => {
+    const axiosInstance = taoAxiosInstance();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+
+    const handleLogin = async () => {
+        try {
+            const response = await axiosInstance.post("/users/login", {
+                email,
+                password,
+            });
+
+            console.log("Đăng nhập thành công:", response);
+            navigation.navigate("HomeTabs");
+        } catch (error: any) {
+            setError("Invalid email or Password. Try Again!");
+        }
+    };
+
     return (
         <SafeAreaView style={styles.safeContainer}>
             <KeyboardAwareScrollView
@@ -39,8 +60,10 @@ const Login = ({ navigation }: any) => {
                 <Text style={styles.welcomeText}>Chào mừng bạn</Text>
                 <Text style={styles.subtitle}>Đăng nhập tài khoản</Text>
 
-                <CustomTextInput placeholder="Nhập email hoặc số điện thoại" />
-                <CustomTextInput placeholder="Mật khẩu" secureTextEntry hasToggle />
+                <CustomTextInput placeholder="Nhập email hoặc số điện thoại" value={email} onChangeText={setEmail} />
+                <CustomTextInput placeholder="Mật khẩu" secureTextEntry value={password} onChangeText={setPassword} />
+
+                {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
                 <View style={styles.cb}>
                     <TouchableOpacity style={styles.cb_2}>
@@ -52,7 +75,7 @@ const Login = ({ navigation }: any) => {
                     <Text style={styles.registerLink}>Quên mật khẩu</Text>
                 </View>
 
-                <CustomButton title="Đăng nhập"/>
+                <CustomButton title="Đăng nhập" onPress={handleLogin} />
 
                 <View style={styles.dividerContainer}>
                     <LinearGradient
@@ -197,6 +220,10 @@ const styles = StyleSheet.create({
     registerLink: {
         color: "#009245",
         fontWeight: "300",
+    },
+    errorText: {
+        color: "red",
+        marginBottom: 10
     },
 });
 
