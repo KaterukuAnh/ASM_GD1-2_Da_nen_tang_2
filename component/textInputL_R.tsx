@@ -4,9 +4,9 @@ import { StyleSheet, TextInput, View, TouchableOpacity, Image } from "react-nati
 interface CustomTextInputProps {
     placeholder: string;
     value?: string;
-    secureTextEntry?: boolean; // Có phải ô mật khẩu không?
-    hasToggle?: boolean; // Có icon ẩn/hiện mật khẩu không?
-    isSearch?: boolean; // Có phải ô tìm kiếm không?
+    secureTextEntry?: boolean;
+    hasToggle?: boolean;
+    isSearch?: boolean;
     onChangeText?: (text: string) => void;
     onSubmitEditing?: () => void;
 }
@@ -25,17 +25,11 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
 
     const handleTextChange = (value: string) => {
         setText(value);
-        onChangeText?.(value); // Gửi dữ liệu ra ngoài nếu có truyền hàm
+        onChangeText?.(value);
     };
 
     return (
         <View style={styles.inputContainer}>
-            {/* Icon tìm kiếm nếu là ô tìm kiếm */}
-            {isSearch && (
-                <Image source={require("../assets/images/search.png")} style={styles.icon} />
-            )}
-
-            {/* Ô nhập liệu */}
             <TextInput
                 style={styles.input}
                 placeholder={placeholder}
@@ -46,7 +40,10 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
                 onSubmitEditing={onSubmitEditing} 
             />
 
-            {/* Icon ẩn/hiện mật khẩu nếu là ô mật khẩu */}
+            {isSearch && (
+                <Image source={require("../assets/images/search.png")} style={styles.icon} />
+            )}
+
             {secureTextEntry && hasToggle && (
                 <TouchableOpacity onPress={() => setPasswordVisible(!isPasswordVisible)}>
                     <Image

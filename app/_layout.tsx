@@ -9,6 +9,8 @@ import Search from "./search";
 import Notification from "./notification";
 import Profile from "./profile";
 import Detail from "./detail";
+import GG from "./gg";
+import Cart from "./cart";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -107,6 +109,11 @@ function TabNavigation() {
 function Index() {
   return (
     <Stack.Navigator>
+      {/* <Stack.Screen
+        name="GG"
+        component={GG}
+        options={{ headerShown: false }}
+      /> */}
       <Stack.Screen
         name="Login"
         component={Login}
@@ -125,6 +132,11 @@ function Index() {
       <Stack.Screen
         name="Detail"
         component={Detail}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Cart"
+        component={Cart}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

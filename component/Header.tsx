@@ -1,97 +1,39 @@
-import { Image, TouchableOpacity, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import { useRouter } from 'expo-router';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const Header = (props : any) => {
-    const router = useRouter();
-    const {
-        title,
-        leftComponent, iconLeft, onPressLeft, leftIconSize = 24, iconLeftColor,
-        centerComponent,
-        rightComponent, iconRight, onPressRight, RightIconSize = 24
-    } = props;
-
-    const renderLeft = () => {
-        return (
-            leftComponent || (
-                <View>
-                    {iconLeft ? (
-                        <TouchableOpacity hitSlop={15} onPress={onPressLeft || router.back}>
-                            <Image 
-                                source={iconLeft}
-                                style={{ 
-                                    width: leftIconSize, 
-                                    height: leftIconSize, 
-                                    tintColor: iconLeftColor 
-                                }}
-                            />
-                        </TouchableOpacity>
-                    ) : (
-                        <View style={{ width: leftIconSize, height: leftIconSize }} />
-                    )}
-                </View>
-            )
-        );
-    };
-
-    const renderCenter = () => {
-        return (
-            centerComponent || (
-                <View style={styles.containerCenter}>
-                    <Text style={styles.title}>{title}</Text>
-                </View>
-            )
-        );
-    };
-
-    const renderRight = () => {
-        return (
-            rightComponent || (
-                <View>
-                    {iconRight ? (
-                        <TouchableOpacity hitSlop={15} onPress={onPressRight}>
-                            <Image 
-                                source={iconRight}
-                                style={{ 
-                                    width: RightIconSize, 
-                                    height: RightIconSize 
-                                }}
-                            />
-                        </TouchableOpacity>
-                    ) : (
-                        <View style={{ width: RightIconSize, height: RightIconSize }} />
-                    )}
-                </View>
-            )
-        );
-    };
-
+const Header = React.memo((props: any) => {
+    const { title, back, backFunc, icon, onPress, navigation } = props;
     return (
-        <View style={[styles.container]}>
-            {renderLeft()}
-            {renderCenter()}
-            {renderRight()}
+        <View style={styles.container}>
+            <TouchableOpacity onPress={backFunc}>
+                <Image style={styles.icon} source={back} />
+            </TouchableOpacity>
+            <Text style={styles.text}>{title}</Text>
+            <TouchableOpacity>
+                <Image style={styles.icon} source={icon} />
+            </TouchableOpacity>
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
+    icon: {
+        width: 20,
+        height: 20,
+    },
     container: {
+        width: '100%',
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        backgroundColor: "#fff",
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 24,
-        height: 60,
-        backgroundColor: '#FFFFFF'
     },
-    containerCenter: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 16,
-        fontWeight: 'medium',
+    text: {
+        fontSize: 21,
+        fontWeight: '500',
+        color: "#000",
     },
 });
 

@@ -1,199 +1,196 @@
-import { Image, ScrollView, StyleSheet, Text, View, ActivityIndicator, SafeAreaView } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { useRoute } from '@react-navigation/native';
+import { Image, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import Wrapper from '@/component/Wrapper';
 import Header from '@/component/Header';
-import ButtonCustom from '@/component/ButtonCustom';
-import Muc from '@/component/Muc';
 import taoAxiosInstance from '@/api/sever';
 
-const Detail = () => {
-    const route = useRoute();
-    const { _id } = route.params as { _id: string };
-
-    const [quantity, setQuantity] = useState(1);
-    const [product, setProduct] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchProduct = async () => {
-            const axios = taoAxiosInstance();
-            try {
-                const response = await axios.get(`/products/${_id}`);
-                setProduct(response);
-            } catch (error) {
-                console.error("Lỗi khi lấy sản phẩm:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProduct();
-    }, [_id]);
-
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-        }).format(amount);
-    };
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#007537" />
-            </View>
-        );
-    }
+const Detail = ({ route, navigation }: any) => {
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <View style={{ flex: 1 }}>
-                <Header
-                    iconLeft={require('../assets/images/chevron-left.png')}
-                    iconLeftColor="#000000"
-                    title={product?.name || "Tên sản phẩm"}
-                    iconRight={require('../assets/images/shopping-cart.png')}
-                />
-                <ScrollView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+        <Wrapper>
+            <Header
+                title="Tên sản phẩm"
+                back={require('../assets/images/chevron-left.png')}
+                backFunc={() => navigation.goBack()}
+                icon={require('../assets/images/shopping-cart.png')}
+                navigation={navigation}
+                onPress={() => navigation.navigate('Cart')}
+            />
+            <View style={styles.container}>
+                <ScrollView>
                     <View style={styles.imgContainer}>
-                        {product?.imageUrl ? (
-                            <Image source={{ uri: product.imageUrl }} style={{ width: '100%', height: '100%' }} resizeMode='contain' />
-                        ) : (
-                            <Text style={styles.textM}>Không có ảnh</Text>
-                        )}
-                    </View>
-                    <View style={{ paddingHorizontal: 48, paddingVertical: 14 }}>
-                        <View style={{ flexDirection: 'row', gap: 8 }}>
-                            <Text style={styles.textBox}>{product?.type || "Loại sản phẩm"}</Text>
-                            <Text style={styles.textBox}>{product?.attribute || "Thuộc tính"}</Text>
+                        <View style={styles.imgShow}>
+                            <Image
+                                style={styles.img}
+                                source={{ uri: "https://i.imgur.com/1bNzszR.jpeg" }}
+                            />
                         </View>
-                        <Text style={[styles.textL, { color: '#007537', marginVertical: 17 }]}>
-                            {product ? formatCurrency(product.price) : "Đang tải..."}
-                        </Text>
-                        <Muc title='Chi tiết sản phẩm' main={true} />
-                        <Muc title="Kích cỡ" content={product?.size || "Đang cập nhật..."} />
-                        <Muc title="Xuất xứ" content={product?.origin || "Đang cập nhật..."} />
-                        <Muc title="Tình trạng" content={product?.quantity > 0 ? `Còn ${product.quantity} sp` : "Hết hàng"} color="#007537" />
+                        <View style={styles.btnImg}>
+                            <TouchableOpacity>
+                                <Image
+                                    style={styles.icon}
+                                    source={require('../assets/images/chevron-left.png')}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <Image
+                                    style={styles.icon}
+                                    source={require('../assets/images/chevron-left.png')}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View style={styles.detailContainer}>
+                        <View style={styles.rowContainer}>
+                            <View style={styles.block}>
+                                <Text style={styles.blockText}>kkk</Text>
+                            </View>
+                            <View style={styles.block}>
+                                <Text style={styles.blockText}>kkk</Text>
+                            </View>
+                        </View>
+                        <Text style={styles.textPrice}></Text>
+                        <View style={[styles.detailBlock, { borderBottomColor: "#000" }]}>
+                            <Text style={styles.text1}>Chi tiết sản phẩm</Text>
+                        </View>
+                        <View style={[styles.detailBlock, { borderBottomColor: "#ABABAB" }]}>
+                            <Text>Kích cỡ</Text>
+                            <Text>M</Text>
+                        </View>
+                        <View style={[styles.detailBlock, { borderBottomColor: "#ABABAB" }]}>
+                            <Text>Xuất xứ</Text>
+                            <Text>A</Text>
+                        </View>
+                        <View style={[styles.detailBlock, { borderBottomColor: "#ABABAB" }]}>
+                            <Text>Tình trạng</Text>
+                            <Text>Còn 0 sp</Text>
+                        </View>
                     </View>
                 </ScrollView>
-                <View style={styles.bottomContainer}>
-                    <View>
-                        <Text style={styles.textS}>Đã chọn {quantity} sản phẩm</Text>
-                        <View style={{ justifyContent: 'space-between', paddingHorizontal: 24, flexDirection: 'row', backgroundColor: '#FFFFFF' }}>
-                            <ButtonCustom minus={true} onPress={() => quantity > 1 && setQuantity(quantity - 1)} />
-                            <Text style={styles.textM}>{quantity}</Text>
-                            <ButtonCustom plus={true} onPress={() => setQuantity(quantity + 1)} />
-                        </View>
-                    </View>
-                    <View>
-                        <Text style={[styles.textS, { textAlign: 'right' }]}>Tạm tính</Text>
-                        <Text style={[styles.textL, { textAlign: 'right' }]}>
-                            {product ? formatCurrency(product.price * quantity) : "Đang tải..."}
-                        </Text>
-                    </View>
+            </View>
+            <View style={styles.priceContainer}>
+                <View style={[styles.rowContainer, { justifyContent: "space-between", width: "90%" }]}>
+                    <Text style={styles.text2}>Đã chọn sản phẩm</Text>
+                    <Text style={styles.text2}>Tạm tính</Text>
                 </View>
-                <View style={styles.buttonContainer}>
-                    <ButtonCustom btn="CHỌN MUA" btnColor={quantity > 0 ? '#007537' : '#ABABAB'} />
+                <View style={[styles.container, { justifyContent: "space-between", width: "90%" }]}>
+                    <View style={[styles.rowContainer, { justifyContent: "space-between", width: "40%", marginVertical: 10 }]}>
+                        <TouchableOpacity style={styles.block1} onPress={() => { }}>
+                            <Image
+                                style={styles.icon}
+                                source={require('../assets/images/minus-square.png')}
+                            />
+                        </TouchableOpacity>
+                        <Text>0</Text>
+                        <TouchableOpacity style={styles.block1} onPress={() => { }}>
+                            <Image
+                                style={styles.icon}
+                                source={require('../assets/images/plus-square.png')}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <Text style={{position: "absolute", right:25, bottom: 15, fontSize: 16}}>0</Text>                    
                 </View>
             </View>
+        </Wrapper>
 
-        </SafeAreaView>
-        // <View style={{ flex: 1 }}>
-        //     <Header
-        //         iconLeft={require('../assets/images/chevron-left.png')}
-        //         iconLeftColor="#000000"
-        //         title={product?.name || "Tên sản phẩm"}
-        //         iconRight={require('../assets/images/shopping-cart.png')}
-        //     />
-        //     <ScrollView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-        //         <View style={styles.imgContainer}>
-        //             {product?.imageUrl ? (
-        //                 <Image source={{ uri: product.imageUrl }} style={{ width: '100%', height: '100%' }} resizeMode='contain' />
-        //             ) : (
-        //                 <Text style={styles.textM}>Không có ảnh</Text>
-        //             )}
-        //         </View>
-        //         <View style={{ paddingHorizontal: 48, paddingVertical: 14 }}>
-        //             <View style={{ flexDirection: 'row', gap: 8 }}>
-        //                 <Text style={styles.textBox}>{product?.type || "Loại sản phẩm"}</Text>
-        //                 <Text style={styles.textBox}>{product?.attribute || "Thuộc tính"}</Text>
-        //             </View>
-        //             <Text style={[styles.textL, { color: '#007537', marginVertical: 17 }]}>
-        //                 {product ? formatCurrency(product.price) : "Đang tải..."}
-        //             </Text>
-        //             <Muc title='Chi tiết sản phẩm' main={true} />
-        //             <Muc title="Kích cỡ" content={product?.size || "Đang cập nhật..."} />
-        //             <Muc title="Xuất xứ" content={product?.origin || "Đang cập nhật..."} />
-        //             <Muc title="Tình trạng" content={product?.quantity > 0 ? `Còn ${product.quantity} sp` : "Hết hàng"} color="#007537" />
-        //         </View>
-        //     </ScrollView>
-        //     <View style={styles.bottomContainer}>
-        //         <View>
-        //             <Text style={styles.textS}>Đã chọn {quantity} sản phẩm</Text>
-        //             <View style={{ justifyContent: 'space-between', paddingHorizontal: 24, flexDirection: 'row', backgroundColor: '#FFFFFF' }}>
-        //                 <ButtonCustom minus={true} onPress={() => quantity > 1 && setQuantity(quantity - 1)} />
-        //                 <Text style={styles.textM}>{quantity}</Text>
-        //                 <ButtonCustom plus={true} onPress={() => setQuantity(quantity + 1)} />
-        //             </View>
-        //         </View>
-        //         <View>
-        //             <Text style={[styles.textS, { textAlign: 'right' }]}>Tạm tính</Text>
-        //             <Text style={[styles.textL, { textAlign: 'right' }]}>
-        //                 {product ? formatCurrency(product.price * quantity) : "Đang tải..."}
-        //             </Text>
-        //         </View>
-        //     </View>
-        //     <View style={styles.buttonContainer}>
-        //         <ButtonCustom btn="CHỌN MUA" btnColor={quantity > 0 ? '#007537' : '#ABABAB'} />
-        //     </View>
-        // </View>
-    );
+
+    )
+
 };
 
 const styles = StyleSheet.create({
-    loadingContainer: {
+    container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: "#fff",
     },
     imgContainer: {
-        height: 250,
-        backgroundColor: '#F6F6F6',
-        justifyContent: 'center',
-        alignItems: 'center',
+        position: 'relative',
+        height: 200,
     },
-    textS: {
-        fontSize: 14,
-        fontWeight: 'regular',
-        color: '#3A3A3A',
+    imgShow: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: "#f6f6f6",
     },
-    textM: {
-        fontSize: 16,
-        fontWeight: 'regular',
+    img: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
     },
-    textL: {
-        fontSize: 24,
-        fontWeight: 'medium',
-    },
-    bottomContainer: {
+    btnImg: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 24,
-        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 20,
+    },
+    btn: {
+        width: 30,
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: "#fff",
+        borderRadius: '50%',
+    },
+    icon: {
+        width: 15,
+        height: 15,
+    },
+    detailContainer: {
+        paddingHorizontal: 20,
         paddingVertical: 10,
     },
-    buttonContainer: {
-        paddingHorizontal: 24,
-        paddingVertical: 20,
-        backgroundColor: '#FFFFFF',
+    rowContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
-    textBox: {
-        color: '#FFFFFF',
-        paddingVertical: 6,
-        paddingHorizontal: 8,
-        backgroundColor: '#009245',
-        borderRadius: 4,
+    block: {
+        padding: 10,
+        borderRadius: 10,
+        backgroundColor: "#009245",
+        marginRight: 5,
+    },
+    blockText: {
+        color: "#fff",
+    },
+    textPrice: {
+        color: "#009245",
+        fontSize: 25,
+        fontWeight: 'bold',
+        marginVertical: 10,
+    },
+    text1: {
+        fontSize: 20,
+        color: "#000",
+    },
+    detailBlock: {
+        marginVertical: 5,
+        paddingVertical: 5,
+        borderBottomWidth: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    priceContainer: {
+        width: '100%',
+        position: 'absolute',
+        bottom: 0,
+        alignItems: 'center',
+    },
+    text2: {
+        fontSize: 16,
+        color: "#ABABAB",
+    },
+    block1: {
+        borderRadius: 5,
+        borderWidth: 2,
+        borderColor: "#000",
+        padding: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
 

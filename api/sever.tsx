@@ -1,57 +1,34 @@
-import axios from "axios";
+import axios from 'axios';
 
-/**
- * Tạo một instance Axios đã được cấu hình với interceptor
- */
-const taoAxiosInstance = (token = "", contentType = "application/json", timeout = 10000) => {
-    const baseURL = process.env.REACT_APP_API_BASE_URL || "https://my-express-app-13ot.onrender.com";
+const API_BASE_URL = 'http://localhost:3000/';
 
-    console.log("Base URL của API:", baseURL); // Kiểm tra URL có đúng không
+const taoAxiosInstance = (token = null, contentType = 'application/json') => {
+  const axiosInstance = axios.create({
+    baseURL: API_BASE_URL,
+  });
 
-    const axiosInstance = axios.create({
-        baseURL: baseURL,
-        timeout: timeout,
-        headers: {
-            Accept: "application/json",
-            "Content-Type": contentType,
-        },
-    });
-
-    axiosInstance.interceptors.request.use(
-        async (config) => {
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
-
-            config.params = {
-                ...config.params,
-                _t: Date.now(), // Tránh cache
-            };
-
-            return config;
-        },
-        (error) => Promise.reject(error)
-    );
-
-    axiosInstance.interceptors.response.use(
-        (response) => {
-            console.log("API phản hồi:", response.data); // Kiểm tra phản hồi API
-            return response.data; // Trả về dữ liệu API
-        },
-        (error) => {
-            const duLieuLoi = {
-                status: error.response?.status,
-                message: error.response?.data?.message || error.message,
-                data: error.response?.data,
-                originalError: error,
-            };
-
-            console.error("Lỗi API:", duLieuLoi);
-            return Promise.reject(duLieuLoi);
+  axiosInstance.interceptors.request.use(
+    config => {
+      try {
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
         }
-    );
+        config.headers.Accept = 'application/json';
+        config.headers['Content-Type'] = contentType;
+      } catch (error) {
+        console.error('Lỗi thiết lập header:', error);
+      }
+      return config;
+    },
+    err => Promise.reject(err),
+  );
 
-    return axiosInstance;
+  axiosInstance.interceptors.response.use(
+    response => response.data,
+    error => Promise.reject(error),
+  );
+
+  return axiosInstance;
 };
 
 export default taoAxiosInstance;

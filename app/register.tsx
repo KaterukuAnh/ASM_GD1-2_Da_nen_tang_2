@@ -20,7 +20,7 @@ import taoAxiosInstance from "@/api/sever";
 const Register = ({ navigation }: any) => {
     const axiosInstance = taoAxiosInstance();
 
-    const [name, setName] = useState("");
+    const [userName, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
@@ -29,7 +29,7 @@ const Register = ({ navigation }: any) => {
     const handleRegister = async () => {
         try {
             const response = await axiosInstance.post("/users/register", {
-                name,
+                userName,
                 email,
                 phone,
                 password
@@ -59,10 +59,10 @@ const Register = ({ navigation }: any) => {
                 <Text style={styles.welcomeText}>Đăng ký</Text>
                 <Text style={styles.subtitle}>Tạo tài khoản</Text>
 
-                <CustomTextInput placeholder="Họ tên" value={name} onChangeText={setName} />
+                <CustomTextInput placeholder="Họ tên" value={userName} onChangeText={setName} />
                 <CustomTextInput placeholder="E-mail" value={email} onChangeText={setEmail} />
                 <CustomTextInput placeholder="Số điện thoại" value={phone} onChangeText={setPhone} />
-                <CustomTextInput placeholder="Mật khẩu" secureTextEntry value={password} onChangeText={setPassword} />
+                <CustomTextInput placeholder="Mật khẩu" secureTextEntry value={password} onChangeText={setPassword} hasToggle />
 
                 {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
@@ -100,7 +100,6 @@ const Register = ({ navigation }: any) => {
                     </TouchableOpacity>
                 </View>
 
-                {/* Tạo tài khoản */}
                 <Text style={styles.registerText}>
                     Bạn đã có tài khoản?{" "}
                     <Text style={styles.registerLink}>Đăng nhập</Text>

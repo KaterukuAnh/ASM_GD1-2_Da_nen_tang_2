@@ -61,7 +61,7 @@ const Login = ({ navigation }: any) => {
                 <Text style={styles.subtitle}>Đăng nhập tài khoản</Text>
 
                 <CustomTextInput placeholder="Nhập email hoặc số điện thoại" value={email} onChangeText={setEmail} />
-                <CustomTextInput placeholder="Mật khẩu" secureTextEntry value={password} onChangeText={setPassword} />
+                <CustomTextInput placeholder="Mật khẩu" secureTextEntry value={password} onChangeText={setPassword} hasToggle />
 
                 {error ? <Text style={styles.errorText}>{error}</Text> : null}
 

@@ -1,248 +1,171 @@
 import React, { useEffect, useState } from "react";
-import {
-    StyleSheet,
-    Text,
-    View,
-    TouchableOpacity,
-    Image,
-    ActivityIndicator,
-    SafeAreaView,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator, SafeAreaView, } from "react-native";
 import ProductComponent from "@/component/product";
 import { FlashList } from "@shopify/flash-list";
 import { ScrollView } from "react-native-gesture-handler";
+import Wrapper from "@/component/Wrapper";
 import taoAxiosInstance from "@/api/sever";
 
-interface ProductItem {
-    _id: string;
-    name: string;
-    price: number;
-    attribute: string;
-    imageUrl: string;
-}
 
-const Home = ({navigation}: any) => {
+const Home = ({ navigation }: any) => {
 
-    const [products, setProducts] = useState<ProductItem[]>([]);
+    const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [visibleProducts, setVisibleProducts] = useState<ProductItem[]>([]);
-    const [showAll, setShowAll] = useState(false);
-
-    const axiosInstance = taoAxiosInstance();
 
     useEffect(() => {
         const fetchProducts = async () => {
-            try {
-                console.log("Bắt đầu gọi API...");
-                const response = await axiosInstance.get("/products/all");
-
-                console.log("Dữ liệu API nhận được:", response);
-                if (!response || !Array.isArray(response)) {
-                    console.error("Lỗi: API không trả về một mảng hợp lệ!");
-                    return;
-                }
-
-                setProducts(response);
-                setVisibleProducts(response.slice(0, 4));
-            } catch (error: any) {
-                console.error("Lỗi lấy sản phẩm:", error?.status, error?.message, error?.data);
-            } finally {
-                setLoading(false);
-            }
+          setLoading(true);
+          try {
+            const res: any = await taoAxiosInstance(null).get('/products/all');
+            setProducts(res);
+          } catch (error) {
+            console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+          } finally {
+            setLoading(false);
+          }
         };
-
+    
         fetchProducts();
-    }, []);
+      }, []);
+    
+      const visibleData = products.slice(0, 4);
+    //   const visibleData1 = [...products]
+    //     .sort(() => Math.random() - 0.5)
+    //     .slice(0, 6);
 
-    const handleSeeMore = () => {
-        if (showAll) {
-            setVisibleProducts(products.slice(0, 4));
-        } else {
-            setVisibleProducts(products);
-        }
-        setShowAll(!showAll);
-    };
 
     return (
-        <SafeAreaView style={styles.safeContainer}>
-            <ScrollView contentContainerStyle={styles.container}>
-                <View>
-                    <View style={styles.headerContainer}>
-                        <View>
-                            <Text style={styles.txtTitle}>
-                                Planta - tỏa sáng
-                            </Text>
-                            <Text style={styles.txtTitle}>
-                                không gian nhà bạn
-                            </Text>
+        <Wrapper>
+            <ScrollView>
+                <View style={styles.container}>
+                    <View style={styles.bannerContainer}>
+                        <View style={styles.textContainer}>
+                            <Text style={styles.bannerText}>Planta - tỏa sáng</Text>
+                            <Text style={styles.bannerText}>không gian nhà bạn</Text>
+                            <Text style={styles.bannerLink}>Xem hàng mới về {"->"}</Text>
                         </View>
-                        <TouchableOpacity style={styles.bgrCart}>
+                        <TouchableOpacity style={styles.btnCartContainer}>
                             <Image
-                                source={require("../assets/images/shopping-cart.png")}
+                                style={styles.icon}
+                                source={require('../assets/images/shopping-cart.png')}
                             />
                         </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.containerNew}>
                         <Image
-                            style={{ width: "100%" }}
-                            source={require("../assets/images/image_9-removebg-preview 1.png")}
+                            source={require('../assets/images/image_9-removebg-preview 1.png')}
                         />
-                        <TouchableOpacity style={styles.newArrivalsButton}>
-                            <Text style={styles.newArrivalsText}>Xem hàng mới về -{">"}</Text>
-                        </TouchableOpacity>
                     </View>
-
-                    <Text style={styles.sectionTitle}>Cây trồng</Text>
-                    <View style={styles.containerPd}>
-                        {loading ? (
-                            <ActivityIndicator size="large" color="#007537" />
-
-                        ) : (
-                            <FlashList
-                                data={visibleProducts}
-                                renderItem={({ item }) => (
-                                    <ProductComponent
-                                        _id={item._id}
-                                        imageUrl={item.imageUrl}
-                                        name={item.name}
-                                        attribute={item.attribute}
-                                        price={item.price}
-                                        onPress={() => navigation.navigate("Detail", { _id: item._id })}
-                                    />
-                                )}
-                                numColumns={2}
-                                keyExtractor={(item) => item._id}
-                                contentContainerStyle={{ paddingVertical: 10 }}
-                                ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-                            />
-                        )}
-                        <TouchableOpacity onPress={handleSeeMore}>
-                            <Text style={styles.seeMoreText}>{showAll ? "Thu gọn" : "Xem thêm Cây trồng"}</Text>
-                        </TouchableOpacity>
+                    <View style={styles.body}>
+                        <Text style={styles.bannerText}>Cây trồng</Text>
                     </View>
-
-                    <View style={styles.containerFooter}>
-                        <View style={styles.footerContent}>
-                            <Text style={styles.footerTitle}>
-                                Lemon Balm Grow Kit
-                            </Text>
-                            <Text style={styles.footerDescription}>
-                                Gồm hạt giống Lemon Balm, gói đất hữu cơ, chậu Planta, marker đánh dấu...
-                            </Text>
-                        </View>
-                        <View style={styles.footerImageContainer}>
-                            <Image
-                                style={styles.footerImage}
-                                source={require("../assets/images/grow-kit-main_540x 1.png")}
-                            />
-                        </View>
+                    <View>
+                        <FlashList
+                            data={visibleData}
+                            numColumns={2}
+                            renderItem={({ item }: any) => (
+                                <ProductComponent
+                                    id={item.id}
+                                    imageUrl={item.imageUrl}
+                                    productName={item.productName}
+                                    attribute={item.attribute}
+                                    price={item.price}
+                                    navigation={navigation}
+                                />
+                            )}
+                        />
                     </View>
                 </View>
             </ScrollView>
-        </SafeAreaView>
-    );
+        </Wrapper>
+    )
 };
 
 const styles = StyleSheet.create({
-    safeContainer: {
+    container: {
         flex: 1,
         backgroundColor: "#fff",
     },
-    container: {
-        flexGrow: 1,
-        paddingBottom: 20,
+    bannerContainer: {
+        position: 'relative',
+        backgroundColor: "#f6f6f6",
+        paddingTop: 80,
     },
-    headerContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginHorizontal: 20,
-        marginVertical: 10,
+    textContainer: {
+        position: 'absolute',
+        top: 50,
+        left: 20,
+        zIndex: 1,
     },
-    txtTitle: {
-        color: "#221F1F",
-        fontWeight: "500",
-        fontSize: 24
+    bannerText: {
+        fontSize: 20,
+        fontWeight: '400',
+        color: "#000",
+        marginBottom: 10,
     },
-    bgrCart: {
-        backgroundColor: "#fff",
-        width: 50,
-        height: 50,
-        borderRadius: 30,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    containerNew: {
-        position: "relative",
-        width: "100%",
-        marginVertical: 10,
-    },
-    newArrivalsButton: {
-        position: "absolute",
-        bottom: 180,
-        marginHorizontal: 20
-    },
-    newArrivalsText: {
+    bannerLink: {
+        fontSize: 16,
+        fontWeight: '500',
         color: "#007537",
-        fontSize: 16,
-        fontWeight: "500"
     },
-    sectionTitle: {
-        fontWeight: "600",
-        fontSize: 16,
-        paddingStart: 10,
-        marginTop: 15,
-        marginBottom: 5,
+    nextIcon: {
+        tintColor: "#4CAF50",
+        width: 20,
+        height: 20,
     },
-    containerPd: {
+    btnCartContainer: {
+        position: 'absolute',
+        top: 50,
+        backgroundColor: "#fff",
+        right: 20,
+        width: 45,
+        height: 45,
+        borderRadius: '50%',
+        zIndex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    icon: {
+        width: 25,
+        height: 25,
+    },
+    body: {
+        flex: 1,
+        paddingHorizontal: 20,
+        paddingTop: 30,
+    },
+    listPro: {
+        flex: 1,
         marginHorizontal: 10,
     },
-    seeMoreText: {
-        textAlign: "right",
-        textDecorationLine: "underline",
-        color: "black",
-        marginRight: 10,
-        marginTop: 5,
+    moreContainer: {
+        alignItems: 'flex-end',
     },
-    containerFooter: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#F6F6F6",
+    btnSeeMore: {
+        marginBottom: 10,
+        marginHorizontal: 20,
+    },
+    btnText: {
+        color: "#4CAF50",
+        fontSize: 18,
+    },
+    bottomBanner: {
+        marginVertical: 10,
         borderRadius: 15,
-        height: 200,
-        width: "90%",
-        overflow: "hidden",
-        position: "relative",
-        alignSelf: "center",
-        marginTop: 20,
+        backgroundColor: "#f6f6f6",
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        overflow: 'hidden',
     },
-    footerContent: {
-        flex: 1,
-        paddingLeft: 20,
-        paddingRight: 10,
-        gap: 5,
+    bottomBannerTextBlock: {
+        width: '55%',
+        marginHorizontal: 20,
     },
-    footerTitle: {
-        fontSize: 16,
-        fontWeight: "600",
+    bottomBannerText: {
+        color: "#000",
+        fontWeight: 'bold',
+        fontSize: 18,
     },
-    footerDescription: {
-        fontSize: 14,
-        width: "50%",
-    },
-    footerImageContainer: {
-        position: "absolute",
-        right: 0,
-        top: 0,
-        bottom: 0,
-        width: "40%",
-    },
-    footerImage: {
-        width: "110%",
-        height: "100%",
-        resizeMode: "cover"
-    }
+
 });
 
 export default Home;

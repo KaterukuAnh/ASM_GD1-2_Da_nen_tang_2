@@ -1,5 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     FlatList,
     Image,
@@ -12,174 +13,155 @@ import {
     SafeAreaView,
     ActivityIndicator,
 } from "react-native";
+import ProductComponent from "@/component/product";
+import taoAxiosInstance from "@/api/sever";
 import Header from "@/component/Header";
 import { FlashList } from "@shopify/flash-list";
+import SearchHistoryComponent from "@/component/SearchHistory";
 import ProductSearch from "@/component/product_search";
 import CustomTextInput from "@/component/textInputL_R";
 
-interface productSearch {
-    _id: string;
-    imageUrl: ImageSourcePropType;
-    name: string;
-    price: number;
-    quantity: number;
-}
 
-const Search: React.FC = ({ navigation }: any) => {
-    const [searchText, setSearchText] = useState("");
-    const [productSearch, setProductSearches] = useState<productSearch[]>([]);
-    const [loading, setLoading] = useState(false);
+const Search = ({ navigation }: any) => {
+    // const [searchValue, setSearchValue] = useState('');
+    // const [searchHistory, setSearchHistory] = useState<string[]>([]);
+    // const [searchResults, setSearchResults] = useState<any[]>([]);
+    // const [isSearching, setIsSearching] = useState(false);
 
-    const fetchProducts = async () => {
-        if (!searchText.trim()) return;
-        setLoading(true);
-        try {
-            const response = await fetch(
-                `https://my-express-app-13ot.onrender.com/products/search/${encodeURIComponent(searchText)}`
-            );
-            const data = await response.json();
-            setProductSearches(data);
-        } catch (error) {
-            console.error("Lỗi khi tìm kiếm sản phẩm:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-    
+    // useEffect(() => {
+    //     const loadSearchHistory = async () => {
+    //         const history = await AsyncStorage.getItem('searchHistory');
+    //         if (history) {
+    //             setSearchHistory(JSON.parse(history));
+    //         }
+    //     };
+    //     loadSearchHistory();
+    // }, []);
+
+    // const handleSearch = async () => {
+    //     try {
+    //         setIsSearching(true);
+    //         const res: any = await taoAxiosInstance(null).get(
+    //             `/products/search/${searchValue}`,
+    //         );
+    //         setSearchResults(res);
+
+    //         const updatedHistory = [
+    //             searchValue,
+    //             ...searchHistory.filter(item => item !== searchValue),
+    //         ].slice(0, 5);
+    //         setSearchHistory(updatedHistory);
+    //         await AsyncStorage.setItem(
+    //             'searchHistory',
+    //             JSON.stringify(updatedHistory),
+    //         );
+    //     } catch (error) {
+    //         console.error('Lỗi khi tìm kiếm sản phẩm:', error);
+    //     } finally {
+    //         setIsSearching(false);
+    //     }
+    // };
+    // const reSearch = (query: string) => {
+    //     setSearchValue(query);
+    //     handleSearch();
+    // };
+
+    // const deleteHistory = async (item: string) => {
+    //     const updatedHistory = searchHistory.filter(history => history !== item);
+    //     setSearchHistory(updatedHistory);
+    //     await AsyncStorage.setItem('searchHistory', JSON.stringify(updatedHistory));
+    // };
+
     return (
-        <SafeAreaView style={styles.appDfColor}>
+        <View style={styles.container}>
             <Header
-                iconLeft={require('../assets/images/chevron-left.png')}
-                title="TÌM KIẾM"
-            />
-            <View style={styles.header}>
-                <View style={styles.rowContainer2}>
-                    <CustomTextInput
-                        placeholder="Tìm kiếm..."
-                        isSearch={true}
-                        onChangeText={setSearchText}
-                        onSubmitEditing={()=>fetchProducts()}
-                        hasToggle={false}
+                title="Tìm kiếm"
+                back={require('../assets/images/chevron-left.png')}
+                backFunc={() => navigation.goBack()}
+                />
+            <View style={styles.searchContainer}>
+                <TextInput
+                    style={styles.searchInput}
+                    
+                    placeholder="Tìm kiếm"
+                    placeholderTextColor = "gray"
+                />
+                <TouchableOpacity>
+                    <Image
+                        style={styles.icon}
+                        source={require('../assets/images/search.png')}
                     />
-                </View>
+                </TouchableOpacity>
             </View>
-            <FlashList
-                data={[1]}
-                renderItem={() => (
-                    <View  style={{justifyContent: "center"}}>
-                        <FlatList
-                            data={productSearch}
-                            horizontal={false}
-                            numColumns={1}
-                            refreshing={false}
-                            style={styles.listPopular}
+            {/* <View style={styles.historyContainer}>
+                {isSearching ? (
+                    <Text style={styles.text}>Đang tìm kiếm...</Text>
+                ) : searchResults.length > 0 ? (
+                    <FlashList
+                        data={searchResults}
+                        renderItem={({ item }) => (
+                            <ProductComponent
+                                id={item._id}
+                                name={item.name}
+                                price={item.price}
+                                quantity={item.quantity}
+                                image={item.imageUrl}
+                                navigation={navigation}
+                            />
+                        )}
+                        keyExtractor={(item, index) => index.toString()}
+                    />
+                ) : (
+                    <>
+                        <Text style={styles.text}>Tìm kiếm gần đây</Text>
+                        <FlashList
+                            data={searchHistory}
+                            keyExtractor={(item, index) => index.toString()}
                             renderItem={({ item }) => (
-                                <ProductSearch
-                                    _id={item._id}
-                                    imageUrl={item.imageUrl}
-                                    name={item.name}
-                                    price={item.price}
-                                    quantity={item.quantity}
+                                <SearchHistoryComponent
+                                    title={item}
+                                    onDelete={() => deleteHistory(item)}
+                                    reSearch={() => reSearch(item)}
                                 />
                             )}
-                            keyExtractor={(item) => item._id}
-                            showsVerticalScrollIndicator={false}
                         />
-                    </View>
+                    </>
                 )}
-            />
-            {loading && (
-                <View style={styles.overlay}>
-                    <ActivityIndicator size="large" color="#007537" />
-                </View>
-            )}
-        </SafeAreaView>
+            </View> */}
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    appDfColor: {
-        backgroundColor: "#fff",
+    container: {
         flex: 1,
-    },
-    header: {
-        width: "100%",
-        flexDirection: "row",
         backgroundColor: "#fff",
-        elevation: 3,
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        shadowOffset: { width: 0, height: 2 },
     },
-    iconBack: {
-        width: 25,
-        marginRight: 15,
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginHorizontal: 30,
+        marginTop: 20,
     },
     searchInput: {
-        width: "65%",
-        fontSize: 12,
-        color: "#333",
-        borderWidth: 0,
-        outlineColor: "transparent",
+        width: '90%',
+        borderBottomColor: "#000",
+        borderBottomWidth: 1,
+        fontSize: 18,
     },
-    clearIcon: {
-        marginLeft: 10,
+    historyContainer: {
+        flex: 1,
+        marginTop: 40,
+        marginHorizontal: 30,
     },
-    iconSend: {
-        width: 25,
-        marginLeft: 10,
-    },
-    container: {
-        paddingHorizontal: 15,
-        paddingBottom: 10,
-        paddingTop: 15,
-        backgroundColor: "#fff",
-    },
-    title: {
-        fontSize: 14,
-        fontWeight: "500",
-    },
-    iconIncrease: {
-        width: 22,
-        height: 22,
-        padding: 5,
-        borderRadius: "50%",
-        backgroundColor: "red",
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 10,
+    text: {
+        fontSize: 18,
+        fontWeight: '500',
     },
     icon: {
-        width: 16,
-        height: 16,
-    },
-    rowContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    rowContainer2: {
-        width: "100%",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 15,
-    },
-    listPopular: {
-        backgroundColor: "#fff",
-        paddingBottom: 5,
-        paddingHorizontal: 5,
-    },
-    overlay: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 2,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        width: 25,
+        height: 25,
     },
 });
 
