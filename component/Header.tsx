@@ -1,26 +1,24 @@
-import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
+import React from 'react'
 
 const Header = React.memo((props: any) => {
-    const { title, back, backFunc, icon, onPress, navigation } = props;
+    const { title, back, backFunc, icon, iconFunc, navigation } = props;
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={backFunc}>
                 <Image style={styles.icon} source={back} />
             </TouchableOpacity>
             <Text style={styles.text}>{title}</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={iconFunc}>
                 <Image style={styles.icon} source={icon} />
             </TouchableOpacity>
         </View>
     );
 });
 
+export default Header;
+
 const styles = StyleSheet.create({
-    icon: {
-        width: 20,
-        height: 20,
-    },
     container: {
         width: '100%',
         paddingVertical: 15,
@@ -35,6 +33,9 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: "#000",
     },
-});
+    icon: {
+        width: 20,
+        height: 20,
+    },
 
-export default Header;
+})

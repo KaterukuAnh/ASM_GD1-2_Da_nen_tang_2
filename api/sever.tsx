@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/';
+const API_BASE_URL = 'https://my-express-app-13ot.onrender.com/';
 
-const taoAxiosInstance = (token = null, contentType = 'application/json') => {
+const AxiosInstance = (token = null, contentType = 'application/json') => {
   const axiosInstance = axios.create({
     baseURL: API_BASE_URL,
   });
@@ -31,4 +31,4 @@ const taoAxiosInstance = (token = null, contentType = 'application/json') => {
   return axiosInstance;
 };
 
-export default taoAxiosInstance;
+export default AxiosInstance;

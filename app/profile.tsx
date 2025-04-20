@@ -1,22 +1,89 @@
-import { Image, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Image, Text, TouchableOpacity, View, StyleSheet, Alert } from 'react-native';
 import Header from '@/component/Header';
-const Profile = (): any => {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AxiosInstance from '@/api/sever';
+import LoadingComponent from '@/component/LoadingComponent';
+import React, { useState, useEffect } from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from "expo-auth-session/providers/google";
+
+
+const Profile = ({ navigation }: any) => {
+    const [user, setUser] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+
+    
+
+
+    useEffect(() => {
+        const getUserInfo = async () => {
+            const userInfo = await AsyncStorage.getItem('userInfo');
+            if (userInfo) {
+                setUser(JSON.parse(userInfo));
+            }
+        };
+
+        getUserInfo();
+    }, []);
+
+    const handleLogout = async () => {
+        setLoading(true);
+        try {
+            const refreshToken = await AsyncStorage.getItem('refreshToken');
+            if (!refreshToken) {
+                Alert.alert('Lỗi', 'Không tìm thấy refresh token!');
+                return;
+            }
+    
+            // Kiểm tra xem đây có phải là tài khoản Google không
+            const isGoogleAccount = await AsyncStorage.getItem('isGoogleAccount') === 'true';
+            
+            if (!isGoogleAccount) {
+                // Đăng xuất API tiêu chuẩn
+                const response: any = await AxiosInstance(null).post('users/logout', {
+                    refreshToken: refreshToken,
+                });
+                Alert.alert('Thành công', response.message);
+            } else {
+                // Xử lý đăng xuất Google trên Web
+                // Lưu ý: Trên web không thể hoàn toàn đăng xuất Google từ JavaScript
+                // nhưng chúng ta có thể xóa token và thông tin đăng nhập của ứng dụng
+    
+                // Google Sign-Out URL (có thể chuyển hướng nhưng tốt hơn là không)
+                // window.open('https://accounts.google.com/logout', '_blank');
+            }
+    
+            // Xóa tất cả dữ liệu xác thực cục bộ
+            await AsyncStorage.removeItem('userInfo');
+            await AsyncStorage.removeItem('refreshToken');
+            await AsyncStorage.removeItem('accessToken');
+            await AsyncStorage.removeItem('isGoogleAccount');
+    
+            navigation.replace('Login');
+        } catch (error) {
+            Alert.alert('Lỗi', 'Đã xảy ra lỗi khi đăng xuất!');
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     return (
         <View style={styles.container}>
             <Header title="Profile" />
             <View style={styles.blockAccount}>
                 <View style={styles.blockImg}>
-
-                    <Image style={styles.img} />
-
+                    {user?.image && (
+                        <Image style={styles.img} source={{ uri: user.image }} />
+                    )}
                 </View>
                 <View>
                     <Text style={styles.name}>
-                        {/* {user?.name || 'Tên không xác định'} */}
+                        {user?.name || 'Tên không xác định'}
                     </Text>
                     <Text style={styles.email}>
-                        {/* {user?.email || 'Email không xác định'} */}
+                        {user?.email || 'Email không xác định'}
                     </Text>
                 </View>
             </View>
@@ -41,10 +108,11 @@ const Profile = (): any => {
                 <TouchableOpacity>
                     <Text style={styles.text}>Chính sách quyền riêng tư</Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => { handleLogout();}}>
                     <Text style={styles.exit}>Đăng xuất</Text>
                 </TouchableOpacity>
             </View>
+            {loading && <LoadingComponent />}
         </View>
     );
 };

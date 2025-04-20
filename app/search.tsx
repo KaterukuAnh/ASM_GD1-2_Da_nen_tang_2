@@ -1,142 +1,129 @@
-import { FontAwesome } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native'
+import React, { useEffect, useState } from 'react';
+import { FlashList } from '@shopify/flash-list';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TextInput,
-    ImageSourcePropType,
-    TouchableOpacity,
-    View,
-    SafeAreaView,
-    ActivityIndicator,
-} from "react-native";
-import ProductComponent from "@/component/product";
-import taoAxiosInstance from "@/api/sever";
-import Header from "@/component/Header";
-import { FlashList } from "@shopify/flash-list";
-import SearchHistoryComponent from "@/component/SearchHistory";
-import ProductSearch from "@/component/product_search";
-import CustomTextInput from "@/component/textInputL_R";
-
+import Header from '@/component/Header';
+import ProductItem from '@/component/ProductItem';
+import AxiosInstance from '@/api/sever';
+import SearchHistory from '@/component/SearchHistory';
 
 const Search = ({ navigation }: any) => {
-    // const [searchValue, setSearchValue] = useState('');
-    // const [searchHistory, setSearchHistory] = useState<string[]>([]);
-    // const [searchResults, setSearchResults] = useState<any[]>([]);
-    // const [isSearching, setIsSearching] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
+    const [searchHistory, setSearchHistory] = useState<string[]>([]);
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
 
-    // useEffect(() => {
-    //     const loadSearchHistory = async () => {
-    //         const history = await AsyncStorage.getItem('searchHistory');
-    //         if (history) {
-    //             setSearchHistory(JSON.parse(history));
-    //         }
-    //     };
-    //     loadSearchHistory();
-    // }, []);
+    useEffect(() => {
+        const loadSearchHistory = async () => {
+            const history = await AsyncStorage.getItem('searchHistory');
+            if (history) {
+                setSearchHistory(JSON.parse(history));
+            }
+        };
+        loadSearchHistory();
+    }, []);
 
-    // const handleSearch = async () => {
-    //     try {
-    //         setIsSearching(true);
-    //         const res: any = await taoAxiosInstance(null).get(
-    //             `/products/search/${searchValue}`,
-    //         );
-    //         setSearchResults(res);
+    const handleSearch = async () => {
+        try {
+            setIsSearching(true);
+            const res: any = await AxiosInstance(null).get(
+                `/products/search/${searchValue}`,
+            );
+            setSearchResults(res);
 
-    //         const updatedHistory = [
-    //             searchValue,
-    //             ...searchHistory.filter(item => item !== searchValue),
-    //         ].slice(0, 5);
-    //         setSearchHistory(updatedHistory);
-    //         await AsyncStorage.setItem(
-    //             'searchHistory',
-    //             JSON.stringify(updatedHistory),
-    //         );
-    //     } catch (error) {
-    //         console.error('Lỗi khi tìm kiếm sản phẩm:', error);
-    //     } finally {
-    //         setIsSearching(false);
-    //     }
-    // };
-    // const reSearch = (query: string) => {
-    //     setSearchValue(query);
-    //     handleSearch();
-    // };
+            const updatedHistory = [
+                searchValue,
+                ...searchHistory.filter(item => item !== searchValue),
+            ].slice(0, 5);
+            setSearchHistory(updatedHistory);
+            await AsyncStorage.setItem(
+                'searchHistory',
+                JSON.stringify(updatedHistory),
+            );
+        } catch (error) {
+            console.error('Lỗi khi tìm kiếm sản phẩm:', error);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+    const reSearch = (query: string) => {
+        setSearchValue(query);
+        handleSearch();
+    };
 
-    // const deleteHistory = async (item: string) => {
-    //     const updatedHistory = searchHistory.filter(history => history !== item);
-    //     setSearchHistory(updatedHistory);
-    //     await AsyncStorage.setItem('searchHistory', JSON.stringify(updatedHistory));
-    // };
-
+    const deleteHistory = async (item: string) => {
+        const updatedHistory = searchHistory.filter(history => history !== item);
+        setSearchHistory(updatedHistory);
+        await AsyncStorage.setItem('searchHistory', JSON.stringify(updatedHistory));
+    };
     return (
         <View style={styles.container}>
-            <Header
-                title="Tìm kiếm"
-                back={require('../assets/images/chevron-left.png')}
-                backFunc={() => navigation.goBack()}
-                />
+            <Header title="Tìm kiếm" />
             <View style={styles.searchContainer}>
                 <TextInput
                     style={styles.searchInput}
-                    
+                    value={searchValue}
+                    onChangeText={setSearchValue}
                     placeholder="Tìm kiếm"
-                    placeholderTextColor = "gray"
+                    placeholderTextColor={"#949090"}
                 />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={handleSearch}>
                     <Image
                         style={styles.icon}
                         source={require('../assets/images/search.png')}
                     />
                 </TouchableOpacity>
             </View>
-            {/* <View style={styles.historyContainer}>
-                {isSearching ? (
-                    <Text style={styles.text}>Đang tìm kiếm...</Text>
-                ) : searchResults.length > 0 ? (
-                    <FlashList
-                        data={searchResults}
-                        renderItem={({ item }) => (
-                            <ProductComponent
-                                id={item._id}
-                                name={item.name}
-                                price={item.price}
-                                quantity={item.quantity}
-                                image={item.imageUrl}
-                                navigation={navigation}
-                            />
-                        )}
-                        keyExtractor={(item, index) => index.toString()}
-                    />
-                ) : (
-                    <>
-                        <Text style={styles.text}>Tìm kiếm gần đây</Text>
-                        <FlashList
-                            data={searchHistory}
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={({ item }) => (
-                                <SearchHistoryComponent
-                                    title={item}
-                                    onDelete={() => deleteHistory(item)}
-                                    reSearch={() => reSearch(item)}
-                                />
-                            )}
-                        />
-                    </>
-                )}
-            </View> */}
+            <View style={styles.historyContainer}>
+        {isSearching ? (
+          <Text style={styles.text}>Đang tìm kiếm...</Text>
+        ) : searchResults.length > 0 ? (
+          <FlashList
+            data={searchResults}
+            renderItem={({item}) => (
+              <ProductItem
+                id={item._id}
+                name={item.name}
+                price={item.price}
+                quantity={item.quantity}
+                image={item.imageUrl}
+                navigation={navigation}
+              />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        ) : (
+          <>
+            <Text style={styles.text}>Tìm kiếm gần đây</Text>
+            <FlashList
+              data={searchHistory}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item}) => (
+                <SearchHistory
+                  title={item}
+                  onDelete={() => deleteHistory(item)}
+                  reSearch={() => reSearch(item)}
+                />
+              )}
+            />
+          </>
+        )}
+      </View>
         </View>
-    );
-};
+    )
+}
+
+export default Search
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#fff",
     },
+    icon: {
+        width: 20,
+        height: 20,
+      },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -159,10 +146,4 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '500',
     },
-    icon: {
-        width: 25,
-        height: 25,
-    },
-});
-
-export default Search;
+})
